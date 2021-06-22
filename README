@@ -19,4 +19,6 @@ To run your application:
 ./mvnw clean compile exec:java
 ```
 
-![Alt text](diagram.png?raw=true "Diagram")
+<p>
+    <img src="diagram.png" />
+</p>
