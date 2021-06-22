@@ -19,6 +19,4 @@ To run your application:
 ./mvnw clean compile exec:java
 ```
 
-<p>
-    <img src="https://github.com/mahfuzsust/vertx/blob/master/diagram.png" />
-</p>
+![diagram](https://raw.githubusercontent.com/mahfuzsust/vertx/master/diagram.png)
