@@ -26,6 +26,7 @@ public class PaymentController extends RestController {
     try {
       PaymentDao payment = Json.decodeValue(routingContext.getBodyAsString(), PaymentDao.class);
       routingContext.vertx().eventBus().send(NotificationUtil.PAYMENT_PROCESSING, new Notification(payment.getWallet(), "Started processing"));
+
       walletService.getById(payment.getWallet()).onSuccess(wallet -> {
         if(wallet.getBalance() >= payment.getAmount()) {
           Transaction transaction = new Transaction(null, payment.getWallet(), payment.getAmount(), TransactionType.CREDIT);
@@ -39,7 +40,10 @@ public class PaymentController extends RestController {
         } else {
           send(JsonObject.mapFrom(new StatusResponse(Status.FAILED)), 200);
         }
-      }).onFailure(this::sendFailure);
+      }).onFailure(throwable -> {
+        routingContext.vertx().eventBus().send(NotificationUtil.PAYMENT_FAILED, new Notification(payment.getWallet(), "Payment failed"));
+        send("Wallet unavailable", 404);
+      });
 
     } catch (Exception e) {
       e.printStackTrace();

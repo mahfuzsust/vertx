@@ -18,6 +18,7 @@ public class NotificationVerticle extends AbstractVerticle {
     vertx.eventBus().consumer(NotificationUtil.PAYMENT_COMPLETED, this::logNotification);
     vertx.eventBus().consumer(NotificationUtil.FUND_ADD_SUCCESS, this::logNotification);
     vertx.eventBus().consumer(NotificationUtil.FUND_ADD_FAILED, this::logNotification);
+    vertx.eventBus().consumer(NotificationUtil.PAYMENT_FAILED, this::logNotification);
   }
 
   private <T> void logNotification(Message<T> message) {

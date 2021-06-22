@@ -18,7 +18,6 @@ public class MongoConnection {
       opt.put("port", Integer.parseInt(p));
     }
     String dbName = conf.getString("mongo_db_name", "vertx");
-    System.out.println("+++++++++++++++++++++++++++" + dbName);
     if (!dbName.isEmpty()) {
       opt.put("db_name", dbName);
     }

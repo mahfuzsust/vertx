@@ -33,8 +33,8 @@ public class WalletController extends RestController {
       walletBalance = Json.decodeValue(routingContext.getBodyAsString(), WalletBalance.class);
     } catch (Exception e) {
       sendError("Invalid input", 400);
+      return;
     }
-    assert walletBalance != null;
     final Wallet wallet = new Wallet(walletBalance.getWallet(), 0.0);
 
     service.exist(wallet.getId()).onSuccess(exist -> {
@@ -43,9 +43,6 @@ public class WalletController extends RestController {
       } else {
         service.add(wallet).onFailure(this::sendFailure).onSuccess(s -> send(JsonObject.mapFrom(new StatusResponse(Status.SUCCESS)), 201));
       }
-
     }).onFailure(this::sendFailure);
-
-
   }
 }

@@ -13,10 +13,6 @@ public class RestController {
     send(object.encodePrettily(), statusCode);
   }
 
-  protected void send (Object object) {
-
-  }
-
   protected void sendFailure(Throwable throwable) {
     context.fail(new VerticleException(throwable, 500));
   }

@@ -1,4 +1,0 @@
-{
-  "http.port" : 8082,
-  "mongo_host": "mongo"
-}

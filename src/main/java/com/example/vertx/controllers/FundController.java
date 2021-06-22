@@ -47,9 +47,11 @@ public class FundController extends RestController {
               routingContext.vertx().eventBus().send(NotificationUtil.FUND_ADD_SUCCESS, new Notification(fundDao.getWallet(), "Fund added"));
               send(JsonObject.mapFrom(new StatusResponse(Status.SUCCESS)), 200);
             }
-          });
+          }).onFailure(this::sendFailure);
         }).onFailure(this::sendFailure);
-      }).onFailure(this::sendFailure);
+      }).onFailure(throwable -> {
+        send("Wallet unavailable", 404);
+      });
 
     } catch (Exception e) {
       sendError("Invalid input", 400);
