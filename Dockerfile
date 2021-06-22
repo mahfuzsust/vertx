@@ -1,7 +1,7 @@
 FROM vertx/vertx4
 
-ENV VERTICLE_NAME com.example.bkash.verticles.MainVerticle
-ENV VERTICLE_FILE target/bkash-1.0.0-SNAPSHOT-fat.jar
+ENV VERTICLE_NAME com.example.vertx.verticles.MainVerticle
+ENV VERTICLE_FILE target/vertx-1.0.0-SNAPSHOT-fat.jar
 
 ENV VERTICLE_HOME /usr/verticles
 
