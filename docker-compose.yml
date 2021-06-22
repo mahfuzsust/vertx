@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./
+    ports:
+      - "8080:8080"
+    environment:
+      - mongo_host=mongo
+    container_name: bkash_app
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    networks:
+      - shared-net
+
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    container_name: mongo
+    volumes:
+      - /var/lib/data/db:/data/db
+    networks:
+      - shared-net
+
+networks:
+  shared-net:
+    driver: bridge
