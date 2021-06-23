@@ -33,7 +33,7 @@ public class MainVerticle extends AbstractVerticle {
     ConfigRetriever retriever = ConfigRetriever.create(vertx, options);
 
     retriever.getConfig(json -> {
-      JsonObject config = json.result();
+      JsonObject config = json.result().getJsonObject("application");
       vertx.deployVerticle(new NotificationVerticle());
       vertx.deployVerticle(new RESTVerticle(), new DeploymentOptions().setConfig(config));
       vertx.deployVerticle(new MessageVerticle());
