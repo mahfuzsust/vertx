@@ -56,14 +56,15 @@ public class RESTVerticle extends AbstractVerticle {
 
     router.route().handler(ctx -> ctx.fail(new VerticleException("Not found" , 404)));
 
+    Integer port = config().getJsonObject("http").getInteger("port");
 
     vertx
       .createHttpServer()
       .requestHandler(router)
-      .listen(config().getInteger("http.port", 8080), http -> {
+      .listen(port, http -> {
         if (http.succeeded()) {
           startPromise.complete();
-          logger.info("HTTP server started on port " + config().getInteger("http.port", 8080));
+          logger.info("HTTP server started on port " + port);
         } else {
           logger.error("Error " + http.cause());
           startPromise.fail(http.cause());

@@ -23,14 +23,19 @@ public class MainVerticle extends AbstractVerticle {
     ConfigStoreOptions env = new ConfigStoreOptions()
       .setType("env");
 
+    ConfigStoreOptions defaultConfig = new ConfigStoreOptions()
+      .setType("file")
+      .setFormat("json")
+      .setConfig(new JsonObject().put("path", "config.json"));
+
     ConfigRetrieverOptions options = new ConfigRetrieverOptions()
-      .addStore(env);
+      .addStore(defaultConfig).addStore(env);
     ConfigRetriever retriever = ConfigRetriever.create(vertx, options);
 
     retriever.getConfig(json -> {
-      JsonObject mongo = json.result();
+      JsonObject config = json.result();
       vertx.deployVerticle(new NotificationVerticle());
-      vertx.deployVerticle(new RESTVerticle(), new DeploymentOptions().setConfig(mongo));
+      vertx.deployVerticle(new RESTVerticle(), new DeploymentOptions().setConfig(config));
       vertx.deployVerticle(new MessageVerticle());
     });
 
