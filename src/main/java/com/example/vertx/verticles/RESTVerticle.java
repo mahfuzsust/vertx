@@ -56,7 +56,7 @@ public class RESTVerticle extends AbstractVerticle {
 
     router.route().handler(ctx -> ctx.fail(new VerticleException("Not found" , 404)));
 
-    Integer port = config().getJsonObject("http").getInteger("port");
+    Integer port = config().getJsonObject("http").getInteger("port", 8080);
 
     vertx
       .createHttpServer()

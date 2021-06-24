@@ -3,6 +3,9 @@ package com.example.vertx;
 import com.example.vertx.util.MongoConnection;
 import com.example.vertx.verticles.NotificationVerticle;
 import com.example.vertx.verticles.RESTVerticle;
+import io.vertx.config.ConfigRetriever;
+import io.vertx.config.ConfigRetrieverOptions;
+import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -23,21 +26,37 @@ public class TestRestVerticle {
 
   static String deploymentId;
   static String wallet;
+  static Integer port;
 
   @BeforeAll
   static void setUp(Vertx vertx, VertxTestContext testContext) {
-    DeploymentOptions options = new DeploymentOptions()
-      .setConfig(new JsonObject().put("http.port", 8080).put("mongo_db_name", "vertx_test"));
-    vertx.deployVerticle(new RESTVerticle(), options, testContext.succeeding(id -> {
-      vertx.deployVerticle(new NotificationVerticle());
-      deploymentId = id;
-      wallet = UUID.randomUUID().toString();
-      CompositeFuture.all(MongoConnection.getClient().dropCollection("vertx.wallets"),
-        MongoConnection.getClient().dropCollection("vertx.transactions"),
-        MongoConnection.getClient().dropCollection("vertx.cards")).onSuccess(compositeFuture -> {
-        testContext.completeNow();
-      }).onFailure(testContext::failNow);
-    }));
+    ConfigStoreOptions env = new ConfigStoreOptions()
+      .setType("env");
+
+    ConfigStoreOptions defaultConfig = new ConfigStoreOptions()
+      .setType("file")
+      .setFormat("json")
+      .setConfig(new JsonObject().put("path", "config.json"));
+
+    ConfigRetrieverOptions options = new ConfigRetrieverOptions()
+      .addStore(defaultConfig).addStore(env);
+    ConfigRetriever retriever = ConfigRetriever.create(vertx, options);
+
+    retriever.getConfig(json -> {
+      JsonObject config = json.result().getJsonObject("application");
+      config.put("mongo_db_name", "vertx_test");
+      vertx.deployVerticle(new RESTVerticle(), new DeploymentOptions().setConfig(config), testContext.succeeding(id -> {
+        vertx.deployVerticle(new NotificationVerticle());
+        deploymentId = id;
+        wallet = UUID.randomUUID().toString();
+        port = config.getJsonObject("http").getInteger("port", 8089);
+        CompositeFuture.all(MongoConnection.getClient().dropCollection("vertx.wallets"),
+          MongoConnection.getClient().dropCollection("vertx.transactions"),
+          MongoConnection.getClient().dropCollection("vertx.cards")).onSuccess(compositeFuture -> {
+          testContext.completeNow();
+        }).onFailure(testContext::failNow);
+      }));
+    });
   }
 
   @AfterAll
@@ -49,7 +68,7 @@ public class TestRestVerticle {
 
   private WebClient getWebClient() {
     WebClientOptions opts = new WebClientOptions()
-      .setDefaultPort(8080)
+      .setDefaultPort(port)
       .setDefaultHost("localhost");
     return WebClient.create(vertx, opts);
   }

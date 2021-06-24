@@ -1,6 +1,6 @@
 package com.example.vertx.verticles;
 
-import com.example.vertx.codecs.NotificationCodec;
+import com.example.vertx.codecs.GenericCodec;
 import com.example.vertx.common.Log;
 import com.example.vertx.dao.Notification;
 import com.example.vertx.util.NotificationUtil;
@@ -13,7 +13,7 @@ public class NotificationVerticle extends AbstractVerticle {
   private Logger logger = Log.get(NotificationVerticle.class);
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
-    vertx.eventBus().registerDefaultCodec(Notification.class, new NotificationCodec());
+    vertx.eventBus().registerDefaultCodec(Notification.class, new GenericCodec<Notification>(Notification.class));
     vertx.eventBus().consumer(NotificationUtil.PAYMENT_PROCESSING, this::logNotification);
     vertx.eventBus().consumer(NotificationUtil.PAYMENT_COMPLETED, this::logNotification);
     vertx.eventBus().consumer(NotificationUtil.FUND_ADD_SUCCESS, this::logNotification);
